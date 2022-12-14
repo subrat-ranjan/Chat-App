@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-export default function Contacts({ contacts, currentUser }) {
+export default function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
@@ -12,7 +12,10 @@ export default function Contacts({ contacts, currentUser }) {
     }
   }, [currentUser, currentUserName]);
 
-  const changeCurrentChat = (index, contact) => {};
+  const changeCurrentChat = (index, contact) => {
+    setCurrentSelected(index);
+    changeChat(contact);
+  };
   return (
     <>
       {currentUserImage && currentUserName && (
@@ -24,7 +27,13 @@ export default function Contacts({ contacts, currentUser }) {
           <div className="contacts">
             {contacts.map((contact, index) => {
               return (
-                <div className={`contact ${index === currentSelected ? "selected" : ""}`} key={index}>
+                <div
+                  className={`contact ${index === currentSelected ? "selected" : ""}`}
+                  key={index}
+                  onClick={() => {
+                    changeCurrentChat(index, contact);
+                  }}
+                >
                   <div className="avatar">
                     <img src={`data:image/svg+xml;base64, ${contact.avatarImage}`} alt="avatar" />
                   </div>
@@ -75,13 +84,23 @@ const Container = styled.div`
     align-items: center;
     overflow: auto;
     gap: 0.8rem;
+    &::-webkit-scrollbar {
+      width: 0.2rem;
+      &-thumb {
+        background-color: #ffffff39;
+        width: 0.1rem;
+        border-radius: 1rem;
+      }
+    }
 
-    .contacts {
-      display: flex;
+    .contact {
       background-color: #ffffff39;
       min-height: 5rem;
       width: 90%;
       cursor: pointer;
+      border-radius: 0.5rem;
+      display: flex;
+      padding-left: 10px;
       padding: 0.4 rem;
       gap: 1rem;
       align-items: center;
@@ -120,7 +139,7 @@ const Container = styled.div`
       color: white;
     }
   }
-  @media screen and (min-width: 720px) and (max-widt: 1080px) {
+  @media screen and (min-width: 720px) and (max-width: 1080px) {
     gap: 0.5rem;
     .username {
       h2 {
