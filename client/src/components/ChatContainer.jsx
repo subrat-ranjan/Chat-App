@@ -1,22 +1,28 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { getAllMessagesRoute, sendMessageRoute } from "../utils/APIRoutes";
 import ChatInput from "./ChatInput";
 import Logout from "./Logout";
+import { v4 as uuidv4 } from "uuid";
 // import Messages from "./Messages";
 
-export default function ChatContainer({ currentChat, currentUser }) {
+export default function ChatContainer({ currentChat, currentUser, socket }) {
   const [messages, setMessages] = useState([]);
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const scrollRef = useRef();
 
   useEffect(() => {
-    (async () => {
-      const response = await axios.post(getAllMessagesRoute, {
-        from: currentUser._id,
-        to: currentChat._id,
-      });
-      setMessages(response.data);
-    })();
+    async function fetchData() {
+      if (currentChat) {
+        const response = await axios.post(getAllMessagesRoute, {
+          from: currentUser._id,
+          to: currentChat._id,
+        });
+        setMessages(response.data);
+      }
+    }
+    fetchData();
   }, [currentChat]); // We want this to run when ever the currentChat is changed , so when ever the currenntChat is changed we want to fetch the chat of the currentUser and the current chat user.
 
   const handleSendMsg = async (msg) => {
@@ -25,7 +31,34 @@ export default function ChatContainer({ currentChat, currentUser }) {
       to: currentChat._id,
       message: msg,
     });
+    socket.current.emit("send-msg", {
+      to: currentChat._id,
+      from: currentUser.id,
+      message: msg,
+    });
+
+    const msgs = [...messages];
+    msgs.push({ fromSelf: true, message: msg });
+    setMessages(msgs);
   };
+
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-recieve", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
+  //this would run every time whenever there is new arrival message.
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
+  }, [messages]); //animation effect of msg
+
   return (
     <>
       {currentChat && (
@@ -45,8 +78,8 @@ export default function ChatContainer({ currentChat, currentUser }) {
           <div className="chat-messages">
             {messages.map((message) => {
               return (
-                <div>
-                  <div className={`message ${message.fromSelf ? "sended" : "recieved"}`} key={message._id}>
+                <div ref={scrollRef} key={uuidv4()}>
+                  <div className={`message ${message.fromSelf ? "sended" : "recieved"}`}>
                     <div className="content">
                       <p>{message.message}</p>
                     </div>
@@ -102,9 +135,18 @@ const Container = styled.div`
     flex-direction: column;
     gap: 1 rem;
     overflow: auto;
+    &::-webkit-scrollbar {
+      width: 0.2rem;
+      &-thumb {
+        background-color: #ffffff39;
+        width: 0.1rem;
+        border-radius: 1rem;
+      }
+    }
     .message {
       display: flex;
       align-items: center;
+      margin: 2px;
       .content {
         max-width: 40%;
         overflow-wrap: break-word;
