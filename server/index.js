@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose")
 
+
 const express = require("express")
 const cors = require("cors")
 // const mongoose = require("mongoose")
@@ -44,7 +45,7 @@ const io = socket(server, {
 
 global.onlineUsers = new Map();
 
-io.on("connction", (socket) => {
+io.on("connection", (socket) => {
     global.chatSocket = socket;
     socket.on("add-user", (userId) => {
         onlineUsers.set(userId, socket.id);

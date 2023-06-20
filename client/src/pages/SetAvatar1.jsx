@@ -146,7 +146,7 @@ const Container = styled.div`
       border-radius: 5rem;
       display: flex;
       justify-content: center;
-      align-item: center;
+      align-items: center;
 
       transition: o.5s ease-in-out;
       img {
