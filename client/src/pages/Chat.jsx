@@ -7,6 +7,7 @@ import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
 import ChatContainer from "../components/ChatContainer";
 import { io } from "socket.io-client";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 export default function Chat() {
   const socket = useRef();
@@ -15,6 +16,12 @@ export default function Chat() {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [currentChat, setCurrrentChat] = useState(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const [isHamburgerMenuOpen, setIsHamburgerMenuOpen] = useState(false);
+
+  const toggleHamburgerMenu = () => {
+    setIsHamburgerMenuOpen(!isHamburgerMenuOpen);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -56,8 +63,16 @@ export default function Chat() {
 
   return (
     <Container>
-      <div className="container">
-        <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange} />
+      <div className={`container ${isHamburgerMenuOpen ? "menu-open" : ""}`}>
+        {/* <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange} /> */}
+
+        <Button>
+          <GiHamburgerMenu onClick={toggleHamburgerMenu} />
+        </Button>
+
+        {/* Conditionally render Contacts component */}
+        {isHamburgerMenuOpen && <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange} />}
+
         {isLoaded && currentChat === undefined ? (
           <Welcome currentUser={currentUser} />
         ) : (
@@ -83,14 +98,40 @@ const Container = styled.div`
     width: 85vw;
     background-color: #00000076;
     display: grid;
-    grid-template-columns: 25% 75%;
+    grid-template-columns: 15% 75%;
+    &.menu-open {
+      grid-template-columns: 100%;
+    }
 
-    @media screen and (min-width: 720px) and (max-widt: 1080px) {
+    @media screen and (min-width: 720px) and (max-width: 1080px) {
       grid-template-columns: 35% 65%;
     }
 
-    @media screen and (min-width: 360px) and (max-widt: 480px) {
-      grid-template-columns: 30% 60%;
+    @media screen and (min-width: 360px) and (max-width: 480px) {
+      grid-template-columns: 19% 71%;
     }
+  }
+`;
+const Button = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #9a86f3;
+  border: none;
+  cursor: pointer;
+  width: 120px;
+  @media screen and (min-width: 360px) and (max-width: 480px) {
+    margin-top: 20px;
+    margin-left: 15px;
+    width: 50px;
+    height: 50px;
+  }
+  /* height: 120px; */
+  svg {
+    /* width: 25rem; */
+    font-size: 3rem;
+    color: white;
   }
 `;

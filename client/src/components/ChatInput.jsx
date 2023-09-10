@@ -57,11 +57,19 @@ const Container = styled.div`
     padding: 0 1rem;
     gap: 1rem;
   }
+  @media screen and (min-width: 360px) and (max-width: 480px) {
+    display: grid;
+    padding: 8px;
+    grid-template-columns: 10% 90%;
+    background-color: #0c0b0b;
+    margin: 0px;
+  }
   .button-container {
     display: flex;
     align-items: center;
     color: white;
     gap: 1rem;
+
     .emoji {
       position: relative;
       svg {
@@ -128,6 +136,12 @@ const Container = styled.div`
       align-items: center;
       background-color: #9a86f3;
       border: none;
+      @media screen and (min-width: 360px) and (max-width: 480px) {
+        padding: 0.4rem 0.8rem;
+        svg {
+          font-size: 1rem;
+        }
+      }
       @media screen and (min-width: 720px) and (max-widt: 1080px) {
         padding: 0.3rem 1rem;
         svg {
@@ -137,6 +151,9 @@ const Container = styled.div`
       svg {
         font-size: 2rem;
         color: white;
+        @media screen and (min-width: 360px) and (max-width: 480px) {
+          font-size: 1.9rem;
+        }
       }
     }
   }

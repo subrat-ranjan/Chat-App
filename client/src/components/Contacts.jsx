@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+// import { GiHamburgerMenu } from "react-icons/gi";
+
 export default function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
+
+  //res css
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   useEffect(() => {
     if (currentUser && !currentUserName) {
       console.log(contacts);
@@ -18,8 +24,11 @@ export default function Contacts({ contacts, currentUser, changeChat }) {
   };
   return (
     <>
+      {/* //res */}
       {currentUserImage && currentUserName && (
         <Container>
+          {/* //res */}
+
           <div className="brand">
             <img src="" alt="" />
             <h3>snappy</h3>
@@ -147,4 +156,12 @@ const Container = styled.div`
       }
     }
   }
+`;
+//res css
+const HamburgerIcon = styled.div`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  cursor: pointer;
 `;
